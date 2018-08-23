@@ -7,7 +7,7 @@ It can also compute alerting series.
 
 ## Add an aggregation
 
-This repository should only contains folders named with un integer.
+This repository should only contains folders named with an integer.
 The integer represents the periodicity in ms.
 
 Under folders, add WarpScripts files.
