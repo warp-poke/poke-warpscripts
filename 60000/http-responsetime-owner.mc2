@@ -1,0 +1,25 @@
+// HTTP Response Time per owner alerting script.
+// This script emit a boolean serie foreach 'alert.http.time.ok_ratio' series.
+
+'{{{rtoken}}}' 'RTOKEN' STORE
+'{{{wtoken}}}' 'WTOKEN' STORE
+NOW 'NOW' STORE
+
+0.1 'THRESHOLD' STORE
+
+[ $RTOKEN '~alert.http.time.ok_ratio' {} $NOW 15 m ] FETCH
+DUP
+<% DROP
+    'gts' STORE
+    [ $gts bucketizer.mean $NOW 0 1 ] BUCKETIZE
+    VALUES 0 GET 0 GET 'mean' STORE
+     $mean TODOUBLE DUP $THRESHOLD TODOUBLE *  - 'threshold' STORE
+
+    $gts SORT VALUES REVERSE 0 GET 'v' STORE
+
+    NEWGTS 'alert.http.time.owner' RENAME
+    $gts LABELS RELABEL
+    [ $NOW NaN NaN NaN $v $threshold < ] ADDVALUE
+%> LMAP
+
+$WTOKEN UPDATE
