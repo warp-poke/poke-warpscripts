@@ -3,6 +3,7 @@
 
 '{{{rtoken}}}' 'RTOKEN' STORE
 '{{{wtoken}}}' 'WTOKEN' STORE
+NOW 'NOW' STORE
 
 'owner_id' 'BY' STORE
 
