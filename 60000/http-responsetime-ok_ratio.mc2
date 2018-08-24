@@ -7,7 +7,7 @@ NOW 'NOW' STORE
 
 'owner_id' 'BY' STORE
 
-[ $RTOKEN 'alert.http.status' { } $NOW 5 m ] FETCH
+[ $RTOKEN 'alert.http.time' { } $NOW 5 m ] FETCH
 [ SWAP bucketizer.last $NOW 0 1 ] BUCKETIZE
 [ SWAP mapper.todouble 0 0 0 ] MAP
 
@@ -20,7 +20,7 @@ DUP
 <% DROP // drop index
     DUP
     VALUES 0 GET 'success_ratio' STORE
-    NEWGTS 'alert.http.status.ok_ratio' RENAME
+    NEWGTS 'alert.http.time.ok_ratio' RENAME
     SWAP LABELS RELABEL
     [ $NOW NaN NaN NaN $success_ratio ] ADDVALUE
 %> LMAP
