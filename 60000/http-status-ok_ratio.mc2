@@ -3,29 +3,26 @@
 
 '{{{rtoken}}}' 'RTOKEN' STORE
 '{{{wtoken}}}' 'WTOKEN' STORE
-'zone' 'BY' STORE
 
-0.1 'THRESHOLD' STORE
+'owner_id' 'BY' STORE
 
-[ $RTOKEN 'alert.http.time' { } $NOW 5 m ] FETCH
-
+[ $RTOKEN 'alert.http.status' { } $NOW 5 m ] FETCH
 [ SWAP bucketizer.last $NOW 0 1 ] BUCKETIZE
+[ SWAP mapper.todouble 0 0 0 ] MAP
 
 DUP
 [ SWAP [ $BY ] reducer.count ] REDUCE 'count' STORE
-
-[ SWAP mapper.todouble 0 0 0 ] MAP
-
 [ SWAP [ $BY ] reducer.sum ] REDUCE 'count_true' STORE
 
 [ $count_true $count [ $BY ] op.div ] APPLY // compute success ratio
 
 <% DROP // drop index
-    DUP LABELS $BY GET 'zone' STORE
+    DUP
     VALUES 0 GET 'success_ratio' STORE
-    NEWGTS 'alert.http.time.' $BY '' 2 APPEND RENAME
-    { $BY $zone } RELABEL
-    [ $NOW NaN NaN NaN 1 $THRESHOLD - $success_ratio <= ] ADDVALUE
+    NEWGTS 'alert.http.time.ok_ratio' RENAME
+    SWAP LABELS RELABEL
+    [ $NOW NaN NaN NaN $success_ratio ] ADDVALUE
 %> LMAP
+
 
 $WTOKEN UPDATE
